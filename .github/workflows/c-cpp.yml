@@ -1,0 +1,23 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: configure
+      run: ./configure
+    - name: make submodule update --init lua-5.3
+      run: git submodule update --init lua-5.1
+    - name: make linux
+      run: make linux
+    - name: make LUAVER=5.13
+      run: make LUAVER=5.3

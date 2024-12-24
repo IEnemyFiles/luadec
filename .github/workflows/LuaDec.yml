@@ -1,4 +1,4 @@
-name: Build LuaDec
+name: LuaDec
 
 on:
   push:
@@ -25,16 +25,18 @@ jobs:
       # Build the project
       - name: Build LuaDec
         run: |
+          cd src  # Replace 'src' with the directory containing the Makefile
           make
 
-      # Optional: Test the build
+      # Optional: Run Tests
       - name: Run Tests
         run: |
+          cd src  # Replace 'src' with the directory containing the tests
           make test
 
-      # Optional: Upload the build artifacts
+      # Optional: Upload Build Artifacts
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: luadec-binaries
-          path: ./luadec
+          path: ./src/luadec  # Adjust this path to point to your built binaries

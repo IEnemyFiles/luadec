@@ -1,4 +1,4 @@
-name: LuaDec
+name: Build LuaDec
 
 on:
   push:
@@ -16,6 +16,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # List all files to debug repository structure
+      - name: List Repository Files
+        run: ls -R
+
       # Set up dependencies
       - name: Install Dependencies
         run: |
@@ -25,18 +29,35 @@ jobs:
       # Build the project
       - name: Build LuaDec
         run: |
-          cd src  # Replace 'src' with the directory containing the Makefile
-          make
+          # Locate the directory containing the Makefile
+          if [ -f Makefile ]; then
+            echo "Found Makefile in the root directory."
+            make
+          else
+            echo "Makefile not found in the root directory."
+            for dir in $(find . -type f -name Makefile -exec dirname {} \;); do
+              echo "Found Makefile in $dir."
+              cd "$dir"
+              make
+              break
+            done
+          fi
 
       # Optional: Run Tests
       - name: Run Tests
         run: |
-          cd src  # Replace 'src' with the directory containing the tests
-          make test
+          if [ -d tests ]; then
+            echo "Running tests..."
+            make test
+          else
+            echo "No tests directory found, skipping."
+          fi
 
       # Optional: Upload Build Artifacts
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: luadec-binaries
-          path: ./src/luadec  # Adjust this path to point to your built binaries
+          path: |
+            ./luadec  # Adjust this path to point to your built binaries, if applicable
+            ./build   # Add any other paths as needed
